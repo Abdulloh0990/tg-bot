@@ -37,6 +37,30 @@ def get_yt_opts(mode="audio"):
         'nocheckcertificate': True,
         'user_agent': random.choice(USER_AGENTS),
         'geo_bypass': True,
+        # МАНА ШУ ЕРДА КУКИ ФАЙЛИНИ УЛАЙМИЗ:
+        'cookiefile': 'instagram_cookies.txt', 
+        'extractor_args': {'instagram': {'check_headers': True}},
+    }
+    
+    if mode == "video":
+        opts.update({
+            'format': 'best',
+            'outtmpl': f"{file_id}.mp4",
+        })
+    else:
+        opts.update({
+            'format': 'bestaudio/best',
+            'outtmpl': f"{file_id}.%(ext)s",
+            'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}]
+        })
+    return opts, file_id
+    file_id = f"dl_{random.randint(1000, 9999)}"
+    opts = {
+        'quiet': True,
+        'no_warnings': True,
+        'nocheckcertificate': True,
+        'user_agent': random.choice(USER_AGENTS),
+        'geo_bypass': True,
         # Instagram блокировкасини айланиб ўтиш учун энг муҳим созлама:
         'extractor_args': {'instagram': {'check_headers': True}},
     }
