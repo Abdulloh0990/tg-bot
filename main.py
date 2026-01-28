@@ -6,7 +6,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-# --- Render учун Dummy Server ---
+# --- Render учун Dummy Server (Live бўлиши учун шарт) ---
 def run_dummy_server():
     port = int(os.environ.get("PORT", 8080))
     server = HTTPServer(('0.0.0.0', port), BaseHTTPRequestHandler)
@@ -19,28 +19,30 @@ TOKEN = "8260660936:AAH52t9eFso4wNpSOb3Pss9BeJnAL3Pdz1I"
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# YouTube блокировкаларини олдини олиш ва созламаларни соддалаштириш
+# Энг кучли алдовчи созламалар
 COMMON_OPTS = {
     'quiet': True,
     'no_warnings': True,
     'nocheckcertificate': True,
-    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    'geo_bypass': True,
+    'socket_timeout': 30,
 }
 
-# --- Функциялар ---
 async def search_music(query):
-    # Фақат SoundCloud-дан қидириш
+    # SoundCloud қидирувини барқарорлаштириш
     opts = {
         **COMMON_OPTS,
         'format': 'bestaudio/best',
-        'default_search': 'scsearch10', 
+        'default_search': 'scsearch10',
+        'ignoreerrors': True,
     }
     try:
         with yt_dlp.YoutubeDL(opts) as ydl:
             info = await asyncio.to_thread(ydl.extract_info, f"scsearch10:{query}", download=False)
             if not info or 'entries' not in info:
                 return []
-            return [{'title': e.get('title', 'Unknown')[:50], 'url': e.get('webpage_url')} for e in info['entries']]
+            return [{'title': e.get('title', 'Unknown')[:50], 'url': e.get('url')} for e in info['entries'] if e]
     except Exception:
         return []
 
@@ -50,8 +52,8 @@ async def download_media(url, mode="video"):
     
     if mode == "video":
         opts.update({
-            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best', 
-            'outtmpl': f"{file_id}.mp4"
+            'format': 'best', 
+            'outtmpl': f"{file_id}.mp4",
         })
     else:
         opts.update({
@@ -62,9 +64,11 @@ async def download_media(url, mode="video"):
     
     try:
         with yt_dlp.YoutubeDL(opts) as ydl:
-            info = await asyncio.to_thread(ydl.extract_info, url, download=True)
-            filename = ydl.prepare_filename(info)
-            return filename if mode == "video" else filename.rsplit('.', 1)[0] + ".mp3"
+            await asyncio.to_thread(ydl.download, [url])
+            # Файл номини аниқлаш
+            ext = "mp4" if mode == "video" else "mp3"
+            filename = f"{file_id}.{ext}"
+            return filename if os.path.exists(filename) else None
     except Exception:
         return None
 
@@ -77,15 +81,15 @@ async def send_welcome(message: types.Message):
 @dp.callback_query(F.data.startswith("music_"))
 async def download_chosen_music(callback: types.CallbackQuery):
     url = callback.data.replace("music_", "")
-    await callback.message.edit_text("⏳ Мусиқа юкланмоқда, озгина кутинг...")
+    msg = await callback.message.edit_text("⏳ Мусиқа тайёрланмоқда...")
     
     path = await download_media(url, mode="audio")
-    if path and os.path.exists(path):
+    if path:
         await callback.message.answer_audio(types.FSInputFile(path))
-        await callback.message.delete()
+        await msg.delete()
         os.remove(path)
     else:
-        await callback.message.edit_text("❌ Мусиқани юклашда хатолик бўлди.")
+        await callback.message.edit_text("❌ Юклашда хатолик. Бу файл блокланган бўлиши мумкин.")
 
 @dp.message(F.text)
 async def handle_msg(message: types.Message):
@@ -93,20 +97,20 @@ async def handle_msg(message: types.Message):
     if text.startswith("/"): return
 
     if "instagram.com" in text:
-        status = await message.answer("⚡️ Инстаграм юкланмоқда...")
+        status = await message.answer("⚡️ Инстаграм видеоси юкланмоқда...")
         path = await download_media(text, mode="video")
-        if path and os.path.exists(path):
-            await message.answer_video(types.FSInputFile(path), caption="🎬 Видео юкланди")
+        if path:
+            await message.answer_video(types.FSInputFile(path), caption="🎬 Тайёр!")
             os.remove(path)
         else:
-            await message.answer("❌ Инстаграм ҳозирча бу видеони юклашга рухсат бермади.")
+            await message.answer("❌ Инстаграм чеклов қўйди (Rate-limit). 5 дақиқадан кейин уриниб кўринг.")
         await status.delete()
     
     else:
         status = await message.answer("🔍 Қидирилмоқда...")
         results = await search_music(text)
         if not results:
-            await message.answer("❌ Мусиқа топилмади.")
+            await message.answer("❌ Ҳеч нарса топилмади.")
             await status.delete()
             return
 
@@ -116,7 +120,6 @@ async def handle_msg(message: types.Message):
         kb.adjust(5)
         
         msg_text = "🎶 Натижалар:\n" + "\n".join([f"{i}. {r['title']}" for i, r in enumerate(results, 1)])
-        msg_text += "\n\n⬇️ Юклаб олиш учун рақамни босинг:"
         await message.answer(msg_text, reply_markup=kb.as_markup())
         await status.delete()
 
