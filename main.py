@@ -19,6 +19,7 @@ TOKEN = "8260660936:AAH52t9eFso4wNpSOb3Pss9BeJnAL3Pdz1I"
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
+# YouTube блокировкаларини олдини олиш ва созламаларни соддалаштириш
 COMMON_OPTS = {
     'quiet': True,
     'no_warnings': True,
@@ -28,6 +29,7 @@ COMMON_OPTS = {
 
 # --- Функциялар ---
 async def search_music(query):
+    # Фақат SoundCloud-дан қидириш
     opts = {
         **COMMON_OPTS,
         'format': 'bestaudio/best',
@@ -39,13 +41,13 @@ async def search_music(query):
             if not info or 'entries' not in info:
                 return []
             return [{'title': e.get('title', 'Unknown')[:50], 'url': e.get('webpage_url')} for e in info['entries']]
-    except Exception as e:
-        print(f"Search error: {e}")
+    except Exception:
         return []
 
 async def download_media(url, mode="video"):
-    file_id = f"file_{abs(hash(url))}_{mode}"
+    file_id = f"dl_{abs(hash(url))}"
     opts = {**COMMON_OPTS}
+    
     if mode == "video":
         opts.update({
             'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best', 
@@ -58,61 +60,65 @@ async def download_media(url, mode="video"):
             'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}]
         })
     
-    with yt_dlp.YoutubeDL(opts) as ydl:
-        info = await asyncio.to_thread(ydl.extract_info, url, download=True)
-        filename = ydl.prepare_filename(info)
-        return filename if mode == "video" else filename.rsplit('.', 1)[0] + ".mp3"
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            info = await asyncio.to_thread(ydl.extract_info, url, download=True)
+            filename = ydl.prepare_filename(info)
+            return filename if mode == "video" else filename.rsplit('.', 1)[0] + ".mp3"
+    except Exception:
+        return None
 
 # --- Handlerлар ---
 
-# 1. Start буйруғи учун алоҳида фильтр
 @dp.message(F.text == "/start")
 async def send_welcome(message: types.Message):
-    await message.answer("👋 Салом! Мусиқа номини ёзинг ёки Instagram ҳаволасини юборинг.\n\nБот SoundCloud орқали мусиқа излайди.")
+    await message.answer("👋 Бу бот Instagram-дан видео юклайди ва исталган қўшиғингиз номини киритсангиз топиб беради.")
 
-# 2. Асосий хабарлар учун
+@dp.callback_query(F.data.startswith("music_"))
+async def download_chosen_music(callback: types.CallbackQuery):
+    url = callback.data.replace("music_", "")
+    await callback.message.edit_text("⏳ Мусиқа юкланмоқда, озгина кутинг...")
+    
+    path = await download_media(url, mode="audio")
+    if path and os.path.exists(path):
+        await callback.message.answer_audio(types.FSInputFile(path))
+        await callback.message.delete()
+        os.remove(path)
+    else:
+        await callback.message.edit_text("❌ Мусиқани юклашда хатолик бўлди.")
+
 @dp.message(F.text)
 async def handle_msg(message: types.Message):
     text = message.text
-    
-    # Агар фойдаланувчи бошқа буйруқ юборса, қидирмайди
-    if text.startswith("/"):
-        return
+    if text.startswith("/"): return
 
     if "instagram.com" in text:
         status = await message.answer("⚡️ Инстаграм юкланмоқда...")
-        video_path = None
-        audio_path = None
-        try:
-            video_path = await download_media(text, mode="video")
-            audio_path = await download_media(text, mode="audio")
-            await message.answer_video(types.FSInputFile(video_path), caption="🎬 Видео")
-            await message.answer_audio(types.FSInputFile(audio_path), caption="🎵 Мусиқа")
-        except Exception:
-            await message.answer("❌ Инстаграм юклашга рухсат бермади (Rate-limit). Кейинроқ уриниб кўринг.")
-        finally:
-            if video_path and os.path.exists(video_path): os.remove(video_path)
-            if audio_path and os.path.exists(audio_path): os.remove(audio_path)
-            await status.delete()
+        path = await download_media(text, mode="video")
+        if path and os.path.exists(path):
+            await message.answer_video(types.FSInputFile(path), caption="🎬 Видео юкланди")
+            os.remove(path)
+        else:
+            await message.answer("❌ Инстаграм ҳозирча бу видеони юклашга рухсат бермади.")
+        await status.delete()
+    
     else:
-        status = await message.answer("🔍 SoundCloud-дан қидирилмоқда...")
-        try:
-            results = await search_music(text)
-            if not results:
-                await message.answer("❌ Мусиқа топилмади.")
-                return
-
-            kb = InlineKeyboardBuilder()
-            for i, r in enumerate(results, 1):
-                kb.button(text=str(i), url=r['url'])
-            kb.adjust(5)
-            
-            msg_text = "🎶 Натижалар (SoundCloud):\n" + "\n".join([f"{i}. {r['title']}" for i, r in enumerate(results, 1)])
-            await message.answer(msg_text, reply_markup=kb.as_markup())
-        except:
-            await message.answer("❌ Қидирувда хатолик юз берди.")
-        finally:
+        status = await message.answer("🔍 Қидирилмоқда...")
+        results = await search_music(text)
+        if not results:
+            await message.answer("❌ Мусиқа топилмади.")
             await status.delete()
+            return
+
+        kb = InlineKeyboardBuilder()
+        for i, r in enumerate(results, 1):
+            kb.button(text=str(i), callback_data=f"music_{r['url']}")
+        kb.adjust(5)
+        
+        msg_text = "🎶 Натижалар:\n" + "\n".join([f"{i}. {r['title']}" for i, r in enumerate(results, 1)])
+        msg_text += "\n\n⬇️ Юклаб олиш учун рақамни босинг:"
+        await message.answer(msg_text, reply_markup=kb.as_markup())
+        await status.delete()
 
 async def main():
     await bot.delete_webhook(drop_pending_updates=True)
