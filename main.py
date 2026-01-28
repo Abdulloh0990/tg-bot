@@ -56,8 +56,26 @@ def get_yt_opts(url, mode="audio"):
             'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}]
         })
     return opts, file_id
-
 async def search_music(query, offset=1):
+    # SoundCloud orqali qidirish uchun 'scsearch' dan foydalanamiz
+    opts = {
+        'quiet': True, 
+        'extract_flat': True, 
+        'user_agent': random.choice(USER_AGENTS),
+        'force_generic_extractor': False
+    }
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            # ytsearch o'rniga scsearch30 ishlatamiz
+            info = await asyncio.to_thread(ydl.extract_info, f"scsearch30:{query}", download=False)
+            entries = [e for e in info.get('entries', []) if e]
+            start = (offset - 1) * 10
+            # Natijalarni shakllantirish
+            res = [{'title': e.get('title', 'Unknown')[:45], 'url': e.get('url')} for e in entries[start:start+10]]
+            return res, len(entries) > (start + 10)
+    except Exception as e:
+        print(f"SoundCloud Search error: {e}")
+        return [], False
     opts = {'quiet': True, 'extract_flat': True, 'user_agent': random.choice(USER_AGENTS)}
     try:
         with yt_dlp.YoutubeDL(opts) as ydl:
