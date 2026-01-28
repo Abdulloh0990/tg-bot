@@ -28,7 +28,6 @@ COMMON_OPTS = {
 
 # --- Функциялар ---
 async def search_music(query):
-    # YouTube ўрнига SoundCloud қидируви ишлатилади
     opts = {
         **COMMON_OPTS,
         'format': 'bestaudio/best',
@@ -36,7 +35,6 @@ async def search_music(query):
     }
     try:
         with yt_dlp.YoutubeDL(opts) as ydl:
-            # scsearch қидируви YouTube каби блокланмайди
             info = await asyncio.to_thread(ydl.extract_info, f"scsearch10:{query}", download=False)
             if not info or 'entries' not in info:
                 return []
@@ -66,21 +64,35 @@ async def download_media(url, mode="video"):
         return filename if mode == "video" else filename.rsplit('.', 1)[0] + ".mp3"
 
 # --- Handlerлар ---
+
+# 1. Start буйруғи учун алоҳида фильтр
+@dp.message(F.text == "/start")
+async def send_welcome(message: types.Message):
+    await message.answer("👋 Салом! Мусиқа номини ёзинг ёки Instagram ҳаволасини юборинг.\n\nБот SoundCloud орқали мусиқа излайди.")
+
+# 2. Асосий хабарлар учун
 @dp.message(F.text)
 async def handle_msg(message: types.Message):
     text = message.text
+    
+    # Агар фойдаланувчи бошқа буйруқ юборса, қидирмайди
+    if text.startswith("/"):
+        return
+
     if "instagram.com" in text:
         status = await message.answer("⚡️ Инстаграм юкланмоқда...")
+        video_path = None
+        audio_path = None
         try:
             video_path = await download_media(text, mode="video")
             audio_path = await download_media(text, mode="audio")
             await message.answer_video(types.FSInputFile(video_path), caption="🎬 Видео")
             await message.answer_audio(types.FSInputFile(audio_path), caption="🎵 Мусиқа")
-            os.remove(video_path)
-            os.remove(audio_path)
-        except Exception as e:
-            await message.answer(f"❌ Хатолик: {str(e)}")
+        except Exception:
+            await message.answer("❌ Инстаграм юклашга рухсат бермади (Rate-limit). Кейинроқ уриниб кўринг.")
         finally:
+            if video_path and os.path.exists(video_path): os.remove(video_path)
+            if audio_path and os.path.exists(audio_path): os.remove(audio_path)
             await status.delete()
     else:
         status = await message.answer("🔍 SoundCloud-дан қидирилмоқда...")
@@ -98,7 +110,7 @@ async def handle_msg(message: types.Message):
             msg_text = "🎶 Натижалар (SoundCloud):\n" + "\n".join([f"{i}. {r['title']}" for i, r in enumerate(results, 1)])
             await message.answer(msg_text, reply_markup=kb.as_markup())
         except:
-            await message.answer("❌ Қидирувда хатолик.")
+            await message.answer("❌ Қидирувда хатолик юз берди.")
         finally:
             await status.delete()
 
