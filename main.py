@@ -16,7 +16,7 @@ def run_dummy_server():
 
 threading.Thread(target=run_dummy_server, daemon=True).start()
 
-TOKEN = "8260660936:AAH52t9eFso4wNpSOb3Pss9BeJnAL3Pdz1I"
+TOKEN = "8260660936:AAEfpLwpL9EcOhzNrbzq3bmWZKzftNElKac"
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
