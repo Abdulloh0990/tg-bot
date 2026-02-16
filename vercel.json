@@ -1,7 +1,9 @@
 {
-  "rewrite": [{ "source": "/(.*)", "destination": "/api/main" }],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/index" }
+  ],
   "functions": {
-    "api/main.py": {
+    "api/index.py": {
       "runtime": "vercel-python@3.10"
     }
   }
