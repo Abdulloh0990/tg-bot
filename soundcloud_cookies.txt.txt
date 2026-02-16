@@ -1,0 +1,35 @@
+# Netscape HTTP Cookie File
+# https://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file! Do not edit.
+
+.soundcloud.com	TRUE	/	FALSE	1801214130	sc_tracking_anonymous_id	%22252b167f-a758-4f40-85d4-d884eb8c68e9%22
+soundcloud.com	FALSE	/	FALSE	1772270127	cw-test-00000000_htlbid-tude_0_100	tude
+.soundcloud.com	TRUE	/	FALSE	1804238127	sc_anonymous_id	32526-214788-376371-456242
+.soundcloud.com	TRUE	/	FALSE	0	cookie_consent	1
+.soundcloud.com	TRUE	/	FALSE	1804238127	sc_theme	dark
+.soundcloud.com	TRUE	/	FALSE	1770282927	sc_session	{%22id%22:%22CF8ED60A-35F7-49CF-A4C2-23F2752B8CEC%22%2C%22lastBecameInactive%22:null}
+soundcloud.com	FALSE	/	FALSE	1772270127	cw-test-20250908_bcss_50_50	control
+soundcloud.com	FALSE	/	FALSE	1772270127	cw-test-20250625_prebid-v2-test_1_99	control
+soundcloud.com	FALSE	/	FALSE	1772270127	cw-test-20251027_triplelift-test_10_90	no-triplelift
+soundcloud.com	FALSE	/	FALSE	1772270128	cw-test-20250425_refresh-viewable-test_30_70	control
+.soundcloud.com	TRUE	/	FALSE	1769764528	panoramaId_expiry	1769764528688
+.soundcloud.com	TRUE	/	FALSE	1793006128	_cc_id	63a75eb94aa4acaf21eaebe0323d5411
+.soundcloud.com	TRUE	/	FALSE	1769764528	panoramaId	0e8f6337158212796dbef0075dada9fb927a32304e1e90976f5f723786189965
+.soundcloud.com	TRUE	/	FALSE	1804238130	_ga	GA1.2.578917811.1769678129
+.soundcloud.com	TRUE	/	FALSE	1769764530	_gid	GA1.2.1912944730.1769678129
+.soundcloud.com	TRUE	/	FALSE	1803392128	cto_bidid	xdfXI182RUk0N3lxNlp3QTN3aXVpRlhHUmR3M0glMkZLUGpucTglMkY3dkh3RVc2R1lVUDZ0U1ZDOExIVjI4czIlMkZnZ2x6cklSR3c4c2xPUVdDMnFyWEQxUWsxbDg4UkljckM5RG5hQ3huWGowQUhsNUNWNTNXRmV4T204JTJGUSUyQjclMkZMJTJCYkdFZUJM
+.soundcloud.com	TRUE	/	TRUE	1777454129	_rdt_uuid	1769678129729.6ac377ca-8a6a-41db-ba47-a5e60c134edd
+.soundcloud.com	TRUE	/	TRUE	1801214130	datadome	ZXJH60WohGW1dbrBjXqkO0doVNp61qHk8NzPtQZGzkaN28x~o8y5eLvtpP6ku3ynlIN7gkM0xFPc8GSR0onzcS4pVny2uVPPJgVoTwNwRq48VAWgRQgMPTz25eMsUO0U
+.soundcloud.com	TRUE	/	TRUE	1801214130	OptanonAlertBoxClosed	2026-01-29T09:15:30.131Z
+.soundcloud.com	TRUE	/	TRUE	1803374130	_scor_uid	3fb1fd5e7ea042af8d30d3912f9457db
+.soundcloud.com	TRUE	/	FALSE	1777454130	_gcl_au	1.1.1492975675.1769678130
+.soundcloud.com	TRUE	/	TRUE	1801214130	eupubconsent-v2	CQex57gQex57gAcABBENCPFsAP_gAEPgAAYgL8NR_G__bWlr-bb3aftkeYxP9_hr7sQxBgbJk24FzLvW7JwXx2E5NAzatqIKmRIAu3TBIQNlHJDURVCgKIgFryDMaEyUoTNKJ6BkiFMZI2tYCFxvm4tjWQCY4vr99lc1mB-N7dr82dzyy6hHn3a5_2S1UJCcIYetDfv8ZBKT-9IEd_x8v4v4_EbpE2-eS1n_pGvp4jd-YnM_dBmxt-TSff7Pn__rl_e7X_vc_n3zv94XH77v_-__f_-7___2b_-__BfcAEw0KiCMsiBAIFAwggQAKCsIAKBAEAACQNEBACYMCHIGAC6wmQAgBQADBACAAEGAAIAABIAEIgAoAIBACBAIFAAGABAEBAAwMAAYALEQCAAEB0DFMCCAQLABIzKoNMCUABIICWyoQSgYEFcIQizwCCBETBQAAAgAFAAAAPBYCEkgJWJBAFxBNAAAQAABRAiQIpCzAEFQZotBWBJwGRpgGD5gmSU6DIAmCEjIMiE34TDxSFECCHIDYpZgDp4goAQAAAAA.f_wACHwAAAAA
+.soundcloud.com	TRUE	/	TRUE	1804238130	_ga_HXKL0JJB2D	GS2.1.s1769678129$o1$g0$t1769678130$j60$l0$h1452625887
+.soundcloud.com	TRUE	/	TRUE	1801214130	OptanonConsent	isGpcEnabled=0&datestamp=Thu+Jan+29+2026+14%3A15%3A30+GMT%2B0500+(%D0%A3%D0%B7%D0%B1%D0%B5%D0%BA%D0%B8%D1%81%D1%82%D0%B0%D0%BD%2C+%D1%81%D1%82%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D1%82%D0%BD%D0%BE%D0%B5+%D0%B2%D1%80%D0%B5%D0%BC%D1%8F)&version=202502.1.0&browserGpcFlag=0&isIABGlobal=false&identifierType=Cookie+Unique+Id&hosts=&consentId=c12c5aab-a710-4bf2-b8fa-daf6548e7e70&interactionCount=1&isAnonUser=1&landingPath=NotLandingPage&groups=C0001%3A1%2CC0003%3A1%2CC0004%3A1%2CC0002%3A1%2CV2STACK42%3A1&iType=1&intType=1
+.soundcloud.com	TRUE	/	FALSE	1777454130	_fbp	fb.1.1769678130342.633769288377679191
+.soundcloud.com	TRUE	/	FALSE	1803546930	__qca	P1-625ae9cf-3103-47aa-a400-98083931d9b7
+.soundcloud.com	TRUE	/	TRUE	1803374130	__gads	ID=cee347b4d1740a97:T=1769678130:RT=1769678130:S=ALNI_MbU7oDlxAJj7OU2r3vsZShXLghGdw
+.soundcloud.com	TRUE	/	TRUE	1785230130	__eoi	ID=c8832c34ce309afb:T=1769678130:RT=1769678130:S=AA-AfjZf-mLRdefzVcrhe6kX9Jfc
+.soundcloud.com	TRUE	/	FALSE	1804238131	afUserId	036b8c2f-4557-41b3-af85-ee52586a917d-p
+.soundcloud.com	TRUE	/	FALSE	1770282930	AF_SYNC	1769678130734
+.soundcloud.com	TRUE	/	FALSE	1803374131	cto_bundle	3gr3919pRGJtanZkc0NhcnBid0toMEp4TTQwcDlsYm1QT0lUYk13MFg1d2lGa2xYWVdCdDVwV0x4Z2VTMkhHZVp0aWlrZ29jNW02cXJkN2xiUXZGRVpJakNUcVdvZlBaaFJEdjBqVjkzczNsRklTeHZTZm8yUXUyZmNNU1VyMVIlMkZLTDRBcHRlalpZMXBsbiUyRiUyRko5RlhHQlhxS0ElM0QlM0Q
